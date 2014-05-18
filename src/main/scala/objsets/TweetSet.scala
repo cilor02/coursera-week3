@@ -80,14 +80,7 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def descendingByRetweet: TweetList = 
-  {
-    val tweet:Tweet = mostRetweeted
-    new Cons(tweet,new Nil)
-    tweet::remove(tweet).descendingByRetweet
-    mostRetweeted
-    tweet
-  }
+  def descendingByRetweet: TweetList
 
 
   /**
@@ -120,6 +113,8 @@ abstract class TweetSet {
 
 class Empty extends TweetSet {
 
+  def descendingByRetweet: TweetList = Nil
+  
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = acc
 
   def mostRetweeted: Tweet = throw new java.util.NoSuchElementException ()
@@ -142,7 +137,29 @@ class Empty extends TweetSet {
 
 class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
+  def descendingByRetweet2: TweetList = 
+  {  
+  def sortDescendingByRetweet(tweetSet:TweetSet): TweetList = 
+  {
+    tweetSet match
+    {
+      case empty : Empty => Nil
+      case _ =>   val tweet:Tweet = tweetSet.mostRetweeted;
+                 new Cons(tweet,sortDescendingByRetweet(tweetSet.remove(tweet)))
+    }
 
+  }
+    sortDescendingByRetweet(this)
+  }
+
+  
+  def descendingByRetweet: TweetList = 
+  {  
+    val tweet = mostRetweeted  
+    new Cons(tweet, remove(tweet).descendingByRetweet)
+  }
+
+  
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = 
 
   {
