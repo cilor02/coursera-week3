@@ -58,7 +58,7 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def union(that: TweetSet): TweetSet = filterAcc((tweet) => !that.contains(tweet),that)
+  def union(that: TweetSet): TweetSet = filterAcc((tweet) => true,that)
 
   /**
    * Returns the tweet from this set which has the greatest retweet count.
@@ -158,19 +158,16 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     val tweet = mostRetweeted  
     new Cons(tweet, remove(tweet).descendingByRetweet)
   }
-
-  
-  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = 
+  def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet =
 
   {
     if (p(elem))
-     new NonEmpty(elem, left.filterAcc(p, acc), right.filterAcc(p,acc))
+      right.filterAcc(p, left.filterAcc(p, acc.incl(elem)))
     else
-    {
       right.filterAcc(p, left.filterAcc(p, acc))
-    }
-      
   }
+  
+
   
   def mostRetweeted():Tweet = 
   {
